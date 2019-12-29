@@ -1,60 +1,57 @@
-# はじめに
-gss-hagakiはGoogleスプレッドシートから宛名のPDFを作成します。
+# hagaki-atena
 
-説明などは下記のページを参考にしてください。
+CSV から葉書の宛名を PDF に出力します。
 
-[作った経緯について](https://2017.l2tp.org/archives/801)
+[yousan / gss-hagaki](https://github.com/yousan/gss-hagaki) をローカルで完結させる改変を行いました。
 
-[デモサイト（PosGo）](https://posgo.l2tp.org)
-
-[PosGoとgss-hagakiの使い方について](https://2017.l2tp.org/archives/809)
-
-
-# 使いかた
+## 使いかた
 
 1. リポジトリをクローンします
 1. composer installします
-1. Googleスプレッドシートでデータを作成します
-1. 共有されたURLに対してgss-hagakiを掛けます
+1. 指定形式の CSV データを作成します
+1. bin/atena.php を実行します
 
-## リポジトリをクローンします
-
-```
-$ git clone https://github.com/yousan/gss-hagaki
-```
-
-## composer installします
+### リポジトリをクローンします
 
 ```
-$ composer install
+% git clone https://github.com/sharapeco/hagaki-atena
 ```
 
-## Googleスプレッドシートでデータを作成します
-
-
-PosGoとgss-hagakiの使い方について https://2017.l2tp.org/archives/809
-を参考にしてください。
-
-## 共有されたURLに対してgss-hagakiを掛けます
-
-下記のようなコードを書いて実行します。
-過去のバージョンではファイルに書き出していましたが、出力が標準出力に出るかもしれないので注意してください。
-
+### composer installします
 
 ```
-<?php
-/**
- * Just do it.
- */
+% composer install
+```
 
-require_once(__DIR__.'/../vendor/autoload.php');
+### 指定形式の CSV データを作成します
 
-use GSSHagaki\GSSHagaki;
+| 列 | 説明 |
+| -- | ---- |
+| id | 通し番号です。現在は利用していませんが、この行に値が入っているもののみ宛名が出力されます。逆にこちらを空欄にすると出力されません。番号が重複していたりしても良いです。 |
+| zipcode  | 宛名の郵便番号です。ハイフンはあってもなくても良いです。例として000-0000でも0000000のどちらでも良いです。スプレッドシートが数値か文字列化を判定するため、また見た目的にもハイフンがある方が良いと思っています。 |
+| address_1  | 宛先住所の一行目です。宛先住所は主にここに入れます。一定の文字数以上（概ね20文字前後）になるとハミ出る恐れがあります。 |
+| address_2  | 宛先住所の二行目です。アパート・マンション名をこちらに入力すると見栄えが良くなります。 |
+| family_name  | 宛名の方の名字です。 |
+| first_name_1  | 宛名の方の下の名前です。名字と組み合わせて全角スペースで区切られます。 |
+| suffix_1  | 宛名の方の敬称です。「様」と入れておくと良いです。「ちゃん」とかでもいけます。 |
+| first_name_2  | 連名で、宛名の方の家族の方を入力します。 |
+| suffix_2  | 連名の敬称です。家族が子供の場合に「ちゃん」を入れる想定です。 |
+| first_name_3  | 連名です。 |
+| suffix_3  | 連名です。 |
+| owner_zipcode  | 差出人の郵便番号です。宛名の郵便番号同様、ハイフンはあり、無しのどちらでも良いです。 |
+| owner_address_1  | 差出人の住所の一行目です。番地までを入れると良いです。このカラムと住所２については下段揃えとなります。 |
+| owner_address_2  | 差出人の住所の二行目です。アパート・マンション名を入れる想定です。 |
+| owner_name  | 差出人名です。連名にはまだ対応できていません。 |
 
-$url    = 'https://docs.google.com/spreadsheets/d/1yfMIdt8wgBPrMY3UwiCTsX3EN_2gcLCmPAEy8dfYeLY/export?usp=sharing&format=csv';
-$hagaki = new GSSHagaki($url);
+### bin/atena.php を実行します
 
 ```
+% php bin/atena.php data.csv
+```
+
+第1引数に作成した CSV ファイルを指定します。元のファイル名 + ‘.pdf’ の PDF ファイルを出力します。
 
 ## ライセンスについて
-gss-hagakiはGPLv3です。MigMixフォントについてはIPAフォントライセンスと鳴ります。
+
+- hagaki-atena は gss-hagaki の GPLv3 を継承しています。
+- [源流明體](https://github.com/ButTaiwan/genryu-font) は SIL Open Font License 1.1 のもとで公開されています。
